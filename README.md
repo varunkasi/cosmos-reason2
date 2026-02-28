@@ -109,15 +109,20 @@ Please make sure you have access to Docker on your machine and the [NVIDIA Conta
 Build the container:
 
 ```bash
-image_tag=$(docker build -f Dockerfile --build-arg=CUDA_VERSION=12.8.1 -q .)
+image_tag=$(docker build -f Dockerfile -q .)
 ```
+
+By default, Docker builds use architecture-specific CUDA:
+
+* `amd64` → CUDA `12.8.1`
+* `arm64` → CUDA `13.0.0`
 
 CUDA variants:
 
 | CUDA Version | Arguments | Notes |
 | --- | --- | --- |
-| CUDA 12.8 | `--build-arg=CUDA_VERSION=12.8.1` | [NVIDIA Driver](https://docs.nvidia.com/cuda/archive/12.8.1/cuda-toolkit-release-notes/index.html#cuda-toolkit-major-component-versions) |
-| CUDA 13.0 | `--build-arg=CUDA_VERSION=13.0.0` | [NVIDIA Driver](https://docs.nvidia.com/cuda/archive/13.0.0/cuda-toolkit-release-notes/index.html#cuda-toolkit-major-component-versions) |
+| CUDA 12.8 | `--build-arg=CUDA_VERSION_AMD64=12.8.1 --build-arg=CUDA_VERSION_ARM64=12.8.1` | [NVIDIA Driver](https://docs.nvidia.com/cuda/archive/12.8.1/cuda-toolkit-release-notes/index.html#cuda-toolkit-major-component-versions) |
+| CUDA 13.0 | `--build-arg=CUDA_VERSION_AMD64=13.0.0 --build-arg=CUDA_VERSION_ARM64=13.0.0` | [NVIDIA Driver](https://docs.nvidia.com/cuda/archive/13.0.0/cuda-toolkit-release-notes/index.html#cuda-toolkit-major-component-versions) |
 
 For DGX Spark and Jetson AGX, you must use CUDA 13.0.
 

@@ -14,10 +14,17 @@
 # limitations under the License.
 
 # Dockerfile using uv environment.
-
-ARG CUDA_VERSION=12.8.1
-ARG BASE_IMAGE=nvidia/cuda:${CUDA_VERSION}-cudnn-devel-ubuntu24.04
-FROM ${BASE_IMAGE}
+#
+# Default CUDA versions by architecture:
+# - amd64 -> 12.8.1
+# - arm64 -> 13.0.0
+ARG TARGETARCH
+ARG CUDA_VERSION_AMD64=12.8.1
+ARG CUDA_VERSION_ARM64=13.0.0
+FROM nvidia/cuda:${CUDA_VERSION_AMD64}-cudnn-devel-ubuntu24.04 AS base-amd64
+FROM nvidia/cuda:${CUDA_VERSION_ARM64}-cudnn-devel-ubuntu24.04 AS base-arm64
+FROM base-${TARGETARCH}
+ARG TARGETARCH
 
 # Set the DEBIAN_FRONTEND environment variable to avoid interactive prompts during apt operations.
 ENV DEBIAN_FRONTEND=noninteractive
@@ -63,7 +70,11 @@ RUN uv tool install wandb
 WORKDIR /workspace
 
 # Install the project's dependencies using the lockfile and settings
-RUN echo cu${CUDA_VERSION} | cut -d. -f1,2 | tr -d . > /root/.cuda-name
+RUN case "${TARGETARCH}" in \
+        amd64) echo "cu128" > /root/.cuda-name ;; \
+        arm64) echo "cu130" > /root/.cuda-name ;; \
+        *) echo "Unsupported TARGETARCH: ${TARGETARCH}" >&2; exit 1 ;; \
+    esac
 RUN --mount=type=cache,target=/root/.cache/uv \
     --mount=type=bind,source=uv.lock,target=uv.lock \
     --mount=type=bind,source=pyproject.toml,target=pyproject.toml \

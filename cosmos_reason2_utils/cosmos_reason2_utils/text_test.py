@@ -73,3 +73,15 @@ def test_create_conversation_openai():
             ],
         },
     ]
+
+
+def test_get_media_url_encodes_hash_in_local_path():
+    url = _get_media_url("/tmp/ws2_#clip.mp4")
+
+    assert url == "file:///tmp/ws2_%23clip.mp4"
+
+
+def test_get_media_url_keeps_http_url():
+    url = _get_media_url("https://example.com/assets/ws2_#clip.mp4")
+
+    assert url == "https://example.com/assets/ws2_#clip.mp4"

@@ -86,11 +86,29 @@ _docker build_args='' run_args='':
     {{run_args}} \
     $image_tag
 
+# Deploy using docker compose (Dockerfile auto-selects CUDA by architecture)
+deploy *args:
+  #!/usr/bin/env bash
+  set -euo pipefail
+  if [ -f "$HOME/.env_keys" ]; then
+    source "$HOME/.env_keys"
+  fi
+  if [ -z "${HF_TOKEN:-}" ]; then
+    echo "ERROR: HF_TOKEN is not set. Add 'export HF_TOKEN=hf_...' to ~/.env_keys"
+    exit 1
+  fi
+  if [ "$(uname -m)" = "aarch64" ]; then
+    echo "Detected architecture: $(uname -m), default CUDA 13.0.0"
+  else
+    echo "Detected architecture: $(uname -m), default CUDA 12.8.1"
+  fi
+  docker compose up --build vllm web {{args}}
+
 # Run the CUDA 12.8 docker container.
-docker-cu128 *run_args: (_docker '--build-arg=CUDA_VERSION=12.8.1' run_args)
+docker-cu128 *run_args: (_docker '--build-arg=CUDA_VERSION_AMD64=12.8.1 --build-arg=CUDA_VERSION_ARM64=12.8.1' run_args)
 
 # Run the CUDA 13.0 docker container.
-docker-cu130 *run_args: (_docker '--build-arg=CUDA_VERSION=13.0.0' run_args)
+docker-cu130 *run_args: (_docker '--build-arg=CUDA_VERSION_AMD64=13.0.0 --build-arg=CUDA_VERSION_ARM64=13.0.0' run_args)
 
 # Run the nightly docker container.
 docker-nightly *run_args: (_docker '-f docker/nightly.Dockerfile' run_args)

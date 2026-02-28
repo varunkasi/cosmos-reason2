@@ -230,12 +230,6 @@ class Online(Args):
     If not provided, the first model in the server will be used.
     """
 
-    fps: float | None = None
-    """FPS of the video."""
-    min_pixels: int | None = None
-    """Min total pixels of the image/video."""
-    total_pixels: int | None = None
-    """Max total pixels of the image/video."""
 
 
 def offline_inference(args: Offline):
@@ -345,36 +339,11 @@ def online_inference(args: Online):
     if args.verbose:
         pprint(conversation, expand_all=True)
 
-    # Process inputs
-    max_model_len = model.max_model_len or qwen_vl_utils.vision_process.MODEL_SEQ_LEN
-    assert args.sampling_params.max_tokens
-    if max_model_len < args.sampling_params.max_tokens:
-        raise ValueError("Max model length must be greater than max tokens.")
-    max_seq_len = max_model_len - args.sampling_params.max_tokens
-    total_pixels = int(max_seq_len * PIXELS_PER_TOKEN * 0.9)
-    if args.total_pixels:
-        if args.total_pixels > total_pixels:
-            raise ValueError(
-                f"Total pixels {args.total_pixels} exceeds limit {total_pixels}."
-            )
-        total_pixels = args.total_pixels
-    mm_processor_kwargs = {
-        "fps": args.fps or qwen_vl_utils.vision_process.FPS,
-        "do_sample_frames": True,
-        "size": {
-            "shortest_edge": args.min_pixels
-            or qwen_vl_utils.vision_process.VIDEO_MIN_TOKEN_NUM * PIXELS_PER_TOKEN,
-            "longest_edge": total_pixels,
-        },
-    }
-    if args.verbose:
-        pprint_dict(mm_processor_kwargs, "mm_processor_kwargs")
-
     # Run inference
     chat_completion = client.chat.completions.create(
         messages=conversation,
         model=model.id,
-        extra_body=args.sampling_kwargs | {"mm_processor_kwargs": mm_processor_kwargs},
+        extra_body=args.sampling_kwargs,
     )
 
     for output in chat_completion.choices:

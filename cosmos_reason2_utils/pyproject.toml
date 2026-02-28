@@ -43,6 +43,9 @@ dev = [
     "pytest>=9.0.1",
     "ruff==0.14.8",
 ]
+web = [
+    "flask>=3.1.0",
+]
 cosmos-rl = [
   "cosmos-rl==0.3.9", # unstable api
   "datasets>=4.4.1",
@@ -133,6 +136,7 @@ explicit = true
 
 [project.scripts]
 cosmos-reason2-inference = "cosmos_reason2_utils.script.inference:main"
+cosmos-reason2-web = "cosmos_reason2_utils.web.app:main"
 
 [tool.hatch.build.targets.sdist]
 packages = [

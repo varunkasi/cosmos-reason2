@@ -1,3 +1,4 @@
+#!/usr/bin/env bash
 # SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
 # SPDX-License-Identifier: Apache-2.0
 #
@@ -13,29 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-[project]
-name = "cosmos-reason2"
-version = "1.0.0"
-requires-python = ">=3.10"
-dependencies = [
-  "cosmos-reason2-utils",
-]
+# Entrypoint for the web service container.
 
-[project.optional-dependencies]
-cu128 = ["cosmos-reason2-utils[cu128_torch29]"]
-cu130 = ["cosmos-reason2-utils[cu130_torch29]"]
-web = ["cosmos-reason2-utils[web]"]
+set -e
 
-[dependency-groups]
-dev = [
-  "cosmos-reason2-utils[dev]",
-  "tomlkit>=0.13.3",
-]
+# Install dependencies (including web extras)
+uv sync --locked --extra=$(cat /root/.cuda-name) --extra=web || true
 
-[tool.uv.sources]
-cosmos-reason2-utils = { workspace = true }
-
-[tool.uv.workspace]
-members = [
-  "cosmos_reason2_utils",
-]
+exec "$@"

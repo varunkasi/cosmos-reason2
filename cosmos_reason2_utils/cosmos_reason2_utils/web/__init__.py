@@ -12,30 +12,3 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-[project]
-name = "cosmos-reason2"
-version = "1.0.0"
-requires-python = ">=3.10"
-dependencies = [
-  "cosmos-reason2-utils",
-]
-
-[project.optional-dependencies]
-cu128 = ["cosmos-reason2-utils[cu128_torch29]"]
-cu130 = ["cosmos-reason2-utils[cu130_torch29]"]
-web = ["cosmos-reason2-utils[web]"]
-
-[dependency-groups]
-dev = [
-  "cosmos-reason2-utils[dev]",
-  "tomlkit>=0.13.3",
-]
-
-[tool.uv.sources]
-cosmos-reason2-utils = { workspace = true }
-
-[tool.uv.workspace]
-members = [
-  "cosmos_reason2_utils",
-]

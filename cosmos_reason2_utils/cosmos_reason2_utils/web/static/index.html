@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<!--
+SPDX-FileCopyrightText: Copyright (c) 2025 NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+SPDX-License-Identifier: Apache-2.0
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cosmos-Reason2 Inference</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <header>
+    <h1>Cosmos-Reason2 Inference</h1>
+    <div class="header-controls">
+      <span id="model-label" class="model-badge">Loading…</span>
+      <span id="health-dot" class="health-dot" title="vLLM status"></span>
+    </div>
+  </header>
+
+  <main>
+    <!-- Left sidebar: file browser -->
+    <aside id="file-browser">
+      <div class="panel-header">
+        <h2>File Browser</h2>
+      </div>
+      <div class="browser-path">
+        <button id="browse-up" title="Go up">⬆</button>
+        <input id="browse-path" type="text" value="/" spellcheck="false">
+        <button id="browse-go" title="Navigate">Go</button>
+      </div>
+      <div id="file-list" class="file-list"></div>
+      <button id="add-selected-btn" class="btn btn-accent" disabled>Add Selected</button>
+    </aside>
+
+    <!-- Right: prompt, files, params, response -->
+    <section id="workspace">
+      <!-- Prompt -->
+      <div class="panel">
+        <label for="prompt-input">Prompt</label>
+        <textarea id="prompt-input" rows="3" placeholder="Describe this image in detail…"></textarea>
+      </div>
+
+      <!-- Selected files -->
+      <div class="panel">
+        <h3>Selected Files <span id="file-count">(0)</span></h3>
+        <div id="selected-files" class="selected-files"></div>
+      </div>
+
+      <!-- Token budget -->
+      <div class="panel" id="token-panel">
+        <h3>Token Budget</h3>
+        <div class="budget-bar-container">
+          <div id="budget-bar" class="budget-bar"></div>
+        </div>
+        <div id="budget-text" class="budget-text">
+          Images: 0 &nbsp; Video: 0 &nbsp; Text: 0 &nbsp; | &nbsp; 0 / 16384
+        </div>
+      </div>
+
+      <!-- Parameters -->
+      <div class="panel">
+        <h3>Parameters</h3>
+        <div class="param-grid">
+          <label>
+            <input type="checkbox" id="param-reasoning" checked>
+            Reasoning
+          </label>
+          <label>Temp
+            <input type="number" id="param-temperature" value="0.6" step="0.05" min="0" max="2">
+          </label>
+          <label>Top-p
+            <input type="number" id="param-top-p" value="0.95" step="0.05" min="0" max="1">
+          </label>
+          <label>Top-k
+            <input type="number" id="param-top-k" value="20" step="1" min="0">
+          </label>
+          <label>Max tokens
+            <input type="number" id="param-max-tokens" value="4096" step="256" min="1">
+          </label>
+          <label>FPS
+            <input type="number" id="param-fps" value="2.0" step="0.5" min="0.5" max="30">
+          </label>
+        </div>
+        <details class="advanced-params">
+          <summary>Advanced</summary>
+          <div class="param-grid">
+            <label>max_model_len
+              <input type="number" id="param-max-model-len" value="16384" step="1024" min="1024">
+            </label>
+            <label>System prompt
+              <textarea id="param-system-prompt" rows="2">You are a helpful assistant.</textarea>
+            </label>
+          </div>
+        </details>
+      </div>
+
+      <!-- Run -->
+      <button id="run-btn" class="btn btn-run">Run Inference</button>
+
+      <!-- Response -->
+      <div class="panel" id="response-panel" hidden>
+        <h3>Response</h3>
+        <div id="reasoning-block" hidden>
+          <details>
+            <summary>Reasoning (click to expand)</summary>
+            <pre id="reasoning-content"></pre>
+          </details>
+        </div>
+        <div id="response-content" class="response-text"></div>
+        <div id="response-meta" class="response-meta"></div>
+      </div>
+    </section>
+
+    <!-- Right: media preview panel -->
+    <aside id="media-preview">
+      <div class="preview-header">
+        <h3>Media Preview</h3>
+        <button id="preview-close" class="preview-close" title="Close preview">&times;</button>
+      </div>
+      <div id="preview-media-list" class="preview-media-list"></div>
+      <div id="preview-filename" class="preview-filename"></div>
+      <div id="preview-content" class="preview-content">
+        <div class="preview-empty">Select a media file to preview</div>
+      </div>
+    </aside>
+  </main>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

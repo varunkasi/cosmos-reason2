@@ -14,6 +14,8 @@
 # limitations under the License.
 
 import os
+from pathlib import Path
+from urllib.parse import urlparse
 from typing import Any
 
 """Text processing utilities."""
@@ -121,10 +123,10 @@ def create_conversation_openai(
 
 
 def _get_media_url(path: str) -> str:
-    if ":" in path:
+    parsed = urlparse(path)
+    if parsed.scheme:
         return path
-    path = os.path.abspath(path)
-    return f"file://{path}"
+    return Path(os.path.abspath(path)).as_uri()
 
 
 def set_vision_kwargs(conversation: list[dict], vision_kwargs: dict):
