@@ -60,6 +60,7 @@ const $pickerUp = document.getElementById("picker-up");
 const $pickerPath = document.getElementById("picker-path");
 const $pickerGo = document.getElementById("picker-go");
 const $pickerList = document.getElementById("picker-list");
+const $pickerSummary = document.getElementById("picker-summary");
 const $pickerAdd = document.getElementById("picker-add");
 const $pickerCancel = document.getElementById("picker-cancel");
 
@@ -414,12 +415,27 @@ async function pickerBrowseTo(path) {
 
 function renderPickerList(entries, displayPath) {
   $pickerList.innerHTML = "";
-  // Only show directories in the picker
+
   const dirs = entries.filter((e) => e.type === "dir");
-  if (dirs.length === 0) {
-    $pickerList.innerHTML = '<div style="padding:10px;color:var(--text-dim)">No subdirectories</div>';
+  const files = entries.filter((e) => e.type !== "dir");
+
+  // Build content summary
+  const counts = { dir: dirs.length, image: 0, video: 0, file: 0 };
+  for (const e of files) counts[e.type] = (counts[e.type] || 0) + 1;
+
+  const parts = [];
+  if (counts.dir) parts.push(`<span class="sum-item"><span class="sum-icon">📁</span> <span class="sum-count">${counts.dir}</span> folder${counts.dir !== 1 ? "s" : ""}</span>`);
+  if (counts.video) parts.push(`<span class="sum-item"><span class="sum-icon">🎬</span> <span class="sum-count">${counts.video}</span> video${counts.video !== 1 ? "s" : ""}</span>`);
+  if (counts.image) parts.push(`<span class="sum-item"><span class="sum-icon">🖼</span> <span class="sum-count">${counts.image}</span> image${counts.image !== 1 ? "s" : ""}</span>`);
+  if (counts.file) parts.push(`<span class="sum-item"><span class="sum-icon">📄</span> <span class="sum-count">${counts.file}</span> other</span>`);
+  $pickerSummary.innerHTML = parts.join("");
+
+  if (entries.length === 0) {
+    $pickerList.innerHTML = '<div style="padding:10px;color:var(--text-dim)">Empty folder</div>';
     return;
   }
+
+  // Render directories (navigable)
   for (const entry of dirs) {
     const el = document.createElement("div");
     el.className = "file-entry dir";
@@ -428,6 +444,23 @@ function renderPickerList(entries, displayPath) {
       <span class="icon">📁</span>
       <span class="name" title="${esc(entry.name)}">${esc(entry.name)}/</span>`;
     el.addEventListener("click", () => pickerBrowseTo(fullPath));
+    $pickerList.appendChild(el);
+  }
+
+  // Separator + files as context (non-interactive)
+  if (dirs.length > 0 && files.length > 0) {
+    const sep = document.createElement("div");
+    sep.className = "picker-separator";
+    $pickerList.appendChild(sep);
+  }
+
+  for (const entry of files) {
+    const el = document.createElement("div");
+    el.className = "file-entry picker-file";
+    el.innerHTML = `
+      <span class="icon">${fileIcon(entry.type)}</span>
+      <span class="name" title="${esc(entry.name)}">${esc(entry.name)}</span>
+      <span class="size">${formatBytes(entry.size || 0)}</span>`;
     $pickerList.appendChild(el);
   }
 }

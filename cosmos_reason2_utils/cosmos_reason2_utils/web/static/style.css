@@ -423,6 +423,62 @@ main {
   flex: 1;
 }
 
+/* ── Picker content summary ─────────────────── */
+.picker-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 10px;
+  padding: 6px 10px;
+  font-size: 11px;
+  font-family: monospace;
+  color: var(--text-dim);
+  border-bottom: 1px solid var(--border);
+  background: rgba(15, 52, 96, 0.4);
+}
+
+.picker-summary:empty {
+  display: none;
+}
+
+.picker-summary .sum-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  white-space: nowrap;
+}
+
+.picker-summary .sum-count {
+  color: var(--text);
+  font-weight: 600;
+}
+
+.picker-summary .sum-icon {
+  font-size: 10px;
+}
+
+/* ── Picker file context entries ────────────── */
+.file-entry.picker-file {
+  opacity: 0.45;
+  cursor: default;
+  font-size: 12px;
+  padding: 2px 8px;
+}
+.file-entry.picker-file:hover {
+  background: transparent;
+  opacity: 0.6;
+}
+.file-entry.picker-file .size {
+  font-size: 10px;
+}
+
+/* Separator between dirs and files in picker */
+.picker-separator {
+  height: 1px;
+  background: var(--border);
+  margin: 4px 8px;
+  opacity: 0.5;
+}
+
 .picker-actions {
   display: flex;
   gap: 6px;
