@@ -82,6 +82,8 @@ SPDX-License-Identifier: Apache-2.0
       </div>
     </aside>
 
+    <div id="sidebar-handle" class="sidebar-handle"></div>
+
     <!-- Right: prompt, files, params, response -->
     <section id="workspace">
       <!-- Prompt -->
@@ -116,7 +118,7 @@ SPDX-License-Identifier: Apache-2.0
             Reasoning
           </label>
           <label>Temp
-            <input type="number" id="param-temperature" value="0.6" step="0.05" min="0" max="2">
+            <input type="number" id="param-temperature" value="0" step="0.05" min="0" max="2">
           </label>
           <label>Top-p
             <input type="number" id="param-top-p" value="0.95" step="0.05" min="0" max="1">
@@ -138,7 +140,7 @@ SPDX-License-Identifier: Apache-2.0
               <input type="number" id="param-max-model-len" value="16384" step="1024" min="1024">
             </label>
             <label>System prompt
-              <textarea id="param-system-prompt" rows="2">You are a helpful assistant.</textarea>
+              <textarea id="param-system-prompt" rows="2">You are an EMT looking at a simulated casualty scenario. You will treat it like a real scene. You will not talk about simulation aspects like training setup, fake scene, etc.</textarea>
             </label>
           </div>
         </details>

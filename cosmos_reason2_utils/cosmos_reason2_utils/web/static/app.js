@@ -737,6 +737,39 @@ $btnSaveWs.addEventListener("click", saveWorkspace);
 $btnExitWs.addEventListener("click", saveAndExitWorkspace);
 $btnAddFolder.addEventListener("click", openFolderPicker);
 
+// ── Sidebar resize ──────────────────────────────────────────────────────────
+
+const $sidebarHandle = document.getElementById("sidebar-handle");
+const $fileBrowser = document.getElementById("file-browser");
+
+(function initSidebarResize() {
+  let startX, startW;
+
+  function onMouseMove(e) {
+    const newW = Math.min(Math.max(180, startW + e.clientX - startX), window.innerWidth * 0.6);
+    $fileBrowser.style.setProperty("--sidebar-w", newW + "px");
+  }
+
+  function onMouseUp() {
+    document.removeEventListener("mousemove", onMouseMove);
+    document.removeEventListener("mouseup", onMouseUp);
+    $sidebarHandle.classList.remove("dragging");
+    document.body.style.cursor = "";
+    document.body.style.userSelect = "";
+  }
+
+  $sidebarHandle.addEventListener("mousedown", (e) => {
+    e.preventDefault();
+    startX = e.clientX;
+    startW = $fileBrowser.offsetWidth;
+    $sidebarHandle.classList.add("dragging");
+    document.body.style.cursor = "col-resize";
+    document.body.style.userSelect = "none";
+    document.addEventListener("mousemove", onMouseMove);
+    document.addEventListener("mouseup", onMouseUp);
+  });
+})();
+
 // ── Init ────────────────────────────────────────────────────────────────────
 
 checkHealth();

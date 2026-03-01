@@ -22,7 +22,7 @@ from cosmos_reason2_utils.text import (
 
 
 def test_create_conversation():
-    system_prompt = "You are a helpful assistant."
+    system_prompt = "You are an EMT looking at a simulated casualty scenario. You will treat it like a real scene. You will not talk about simulation aspects like training setup, fake scene, etc."
     user_prompt = "What is the capital of France?"
     images = ["image1.png", "image2.png"]
     videos = ["video1.mp4", "video2.mp4"]
@@ -50,7 +50,7 @@ def test_create_conversation():
 
 
 def test_create_conversation_openai():
-    system_prompt = "You are a helpful assistant."
+    system_prompt = "You are an EMT looking at a simulated casualty scenario. You will treat it like a real scene. You will not talk about simulation aspects like training setup, fake scene, etc."
     user_prompt = "What is the capital of France?"
     images = ["image1.png", "image2.png"]
     videos = ["video1.mp4", "video2.mp4"]

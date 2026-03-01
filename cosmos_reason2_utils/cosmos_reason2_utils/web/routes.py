@@ -49,7 +49,7 @@ MEDIA_EXTENSIONS = IMAGE_EXTENSIONS | VIDEO_EXTENSIONS
 # We avoid importing that module because it triggers init_script() and requires vLLM/GPU.
 SAMPLING_DEFAULTS = {
     "reasoning": {
-        "temperature": 0.6,
+        "temperature": 0,
         "top_p": 0.95,
         "top_k": 20,
         "max_tokens": 4096,

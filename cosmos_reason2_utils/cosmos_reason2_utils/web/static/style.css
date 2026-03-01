@@ -75,12 +75,26 @@ main {
 
 /* ── File Browser (left sidebar) ────────────── */
 #file-browser {
-  width: 300px;
-  min-width: 240px;
+  width: var(--sidebar-w, 300px);
+  min-width: 180px;
+  max-width: 60vw;
   border-right: 1px solid var(--border);
   display: flex;
   flex-direction: column;
   background: var(--bg-panel);
+}
+
+/* ── Sidebar resize handle ──────────────────── */
+.sidebar-handle {
+  width: 5px;
+  cursor: col-resize;
+  background: transparent;
+  transition: background 0.15s;
+  flex-shrink: 0;
+}
+.sidebar-handle:hover,
+.sidebar-handle.dragging {
+  background: var(--accent);
 }
 
 #workspace-view {
@@ -472,6 +486,8 @@ textarea, input[type="text"], input[type="number"] {
   font-family: inherit;
   width: 100%;
   resize: vertical;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
 }
 textarea:focus, input:focus { outline: none; border-color: var(--accent); }
 
@@ -544,8 +560,8 @@ textarea:focus, input:focus { outline: none; border-color: var(--accent); }
 
 /* ── Parameters ─────────────────────────────── */
 .param-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  display: flex;
+  flex-wrap: wrap;
   gap: 10px;
   align-items: end;
 }
@@ -556,6 +572,8 @@ textarea:focus, input:focus { outline: none; border-color: var(--accent); }
   display: flex;
   flex-direction: column;
   gap: 4px;
+  min-width: 70px;
+  max-width: 120px;
 }
 
 .param-grid input[type="checkbox"] {
@@ -564,13 +582,29 @@ textarea:focus, input:focus { outline: none; border-color: var(--accent); }
 }
 
 .param-grid input[type="number"] {
-  padding: 5px 8px;
+  padding: 5px 6px;
   font-size: 13px;
+  width: 80px;
 }
 
 .param-grid textarea {
   font-size: 13px;
-  grid-column: 1 / -1;
+  width: 100%;
+  flex-basis: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.param-grid label:has(textarea) {
+  min-width: 100%;
+  max-width: 100%;
+}
+
+.param-grid label:has(input[type="checkbox"]) {
+  flex-direction: row;
+  align-items: center;
+  min-width: auto;
+  max-width: none;
 }
 
 .advanced-params {

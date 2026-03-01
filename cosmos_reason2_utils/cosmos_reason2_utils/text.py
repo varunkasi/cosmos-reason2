@@ -20,7 +20,7 @@ from typing import Any
 
 """Text processing utilities."""
 
-SYSTEM_PROMPT = "You are a helpful assistant."
+SYSTEM_PROMPT = "You are an EMT looking at a simulated casualty scenario. You will treat it like a real scene. You will not talk about simulation aspects like training setup, fake scene, etc."
 """Default system prompt."""
 
 REASONING_PROMPT = """Answer the question using the following format:
