@@ -24,45 +24,45 @@ description = "Cosmos-Reason2 utilities for inference and post-training"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-  "accelerate>=1.12.0",
-  "av>=16.0.1",
-  "imageio-ffmpeg>=0.6.0",
-  "matplotlib>=3.10.7",
-  "numpy>=2.2.6,<2.3.0", # numba required <2.3
-  "pillow>=12.0.0",
-  "pydantic>=2.12.4",
-  "pyyaml>=6.0.3",
+  "accelerate==1.12.0",
+  "av==16.0.1",
+  "imageio-ffmpeg==0.6.0",
+  "matplotlib==3.10.7",
+  "numpy==2.2.6",
+  "pillow==12.0.0",
+  "pydantic==2.12.4",
+  "pyyaml==6.0.3",
   "qwen-vl-utils==0.0.14", # unstable api
-  "rich>=14.2.0",
-  "transformers>=4.57.0,<5.0.0",
-  "tyro>=0.9.35",
+  "rich==14.2.0",
+  "transformers==4.57.1",
+  "tyro==0.9.35",
 ]
 
 [project.optional-dependencies]
 dev = [
-    "pytest>=9.0.1",
+    "pytest==9.0.1",
     "ruff==0.14.8",
 ]
 web = [
-    "flask>=3.1.0",
+    "flask==3.1.3",
 ]
 cosmos-rl = [
   "cosmos-rl==0.3.9", # unstable api
-  "datasets>=4.4.1",
-  "toml>=0.10.2",
-  "wandb>=0.23.0",
+  "datasets==4.4.1",
+  "toml==0.10.2",
+  "wandb==0.23.0",
 ]
 trl = [
-  "trl[peft]>=0.26.1",
-  "bitsandbytes>=0.49.0",
-  "tensorboard>=2.20.0",
-  "math_verify>=0.8.0",
+  "trl[peft]==0.26.1",
+  "bitsandbytes==0.49.0",
+  "tensorboard==2.20.0",
+  "math_verify==0.8.0",
 ]
 # vLLM 0.11: required by cosmos-rl/trl
 cu128_torch28 = [
   "vllm==0.11.0",
   "torch==2.8.0", # version required by vLLM: https://github.com/vllm-project/vllm/releases
-  "torchvision", # version pinned by torch
+  "torchvision==0.23.0", # must match torch 2.8.x
   "torchao==0.13.0", # version compatible with torch 2.8: https://github.com/pytorch/ao/issues/2919
   "torchcodec==0.7.0; platform_machine != 'aarch64'", # version compatible with torch 2.8: https://github.com/meta-pytorch/torchcodec/releases
   "flash-attn; platform_machine != 'aarch64'",
@@ -71,15 +71,15 @@ cu128_torch28 = [
 cu128_torch29 = [
   "vllm==0.12.0",
   "torch==2.9.0", # version required by vLLM: https://github.com/vllm-project/vllm/releases
-  "torchvision", # version pinned by torch
+  "torchvision==0.24.0", # must match torch 2.9.x
   "torchao==0.14.1", # version compatible with torch 2.9: https://github.com/pytorch/ao/issues/2919
   "torchcodec==0.9.1; platform_machine != 'aarch64'", # version compatible with torch 2.9: https://github.com/meta-pytorch/torchcodec/releases
 ]
 # vLLM 0.13
 cu130_torch29 = [
-  "vllm",
+  "vllm==0.13.0",
   "torch==2.9.0",
-  "torchvision", # version pinned by torch
+  "torchvision==0.24.0", # must match torch 2.9.x
   "torchao==0.14.1", # version compatible with torch 2.9: https://github.com/pytorch/ao/issues/2919
   "torchcodec==0.9.1", # version compatible with torch 2.9: https://github.com/meta-pytorch/torchcodec/releases
 ]

@@ -29,7 +29,7 @@ web = ["cosmos-reason2-utils[web]"]
 [dependency-groups]
 dev = [
   "cosmos-reason2-utils[dev]",
-  "tomlkit>=0.13.3",
+  "tomlkit==0.13.3",
 ]
 
 [tool.uv.sources]
