@@ -27,11 +27,16 @@ from cosmos_reason2_utils.web.routes import api
 logger = logging.getLogger(__name__)
 
 
-def create_app(vllm_url: str = "http://localhost:8000") -> Flask:
+def create_app(
+    vllm_url: str = "http://localhost:8000",
+    workspace_cache: str = "/workspace_cache",
+) -> Flask:
     """Create and configure the Flask application."""
     static_dir = Path(__file__).parent / "static"
     app = Flask(__name__, static_folder=str(static_dir), static_url_path="/static")
     app.config["VLLM_URL"] = vllm_url
+    app.config["WORKSPACE_CACHE"] = workspace_cache
+    app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
     app.register_blueprint(api)
     return app
 
@@ -46,6 +51,8 @@ class ServerArgs:
     """Server port."""
     vllm_url: str = "http://localhost:8000"
     """vLLM server URL."""
+    workspace_cache: str = "/workspace_cache"
+    """Directory for persistent workspace cache."""
     debug: bool = False
     """Enable Flask debug mode."""
 
@@ -55,7 +62,7 @@ def main():
     logging.basicConfig(level=logging.INFO)
     logger.info("Starting Cosmos-Reason2 Web UI on %s:%d", args.host, args.port)
     logger.info("vLLM backend: %s", args.vllm_url)
-    app = create_app(vllm_url=args.vllm_url)
+    app = create_app(vllm_url=args.vllm_url, workspace_cache=args.workspace_cache)
     app.run(host=args.host, port=args.port, debug=args.debug)
 
 

@@ -20,18 +20,66 @@ SPDX-License-Identifier: Apache-2.0
   </header>
 
   <main>
-    <!-- Left sidebar: file browser -->
+    <!-- Left sidebar: workspace & file browser -->
     <aside id="file-browser">
-      <div class="panel-header">
-        <h2>File Browser</h2>
+      <!-- Landing view (no active workspace) -->
+      <div id="landing-view">
+        <div class="panel-header">
+          <h2>Workspaces</h2>
+        </div>
+        <div id="landing-buttons" class="landing-buttons">
+          <button id="btn-load-ws" class="landing-btn">
+            <span class="landing-icon">📂</span>
+            <span class="landing-label">Load Workspace</span>
+          </button>
+          <button id="btn-new-ws" class="landing-btn">
+            <span class="landing-icon">✨</span>
+            <span class="landing-label">New Workspace</span>
+          </button>
+        </div>
+        <div id="ws-list-container" style="display:none">
+          <div id="ws-list" class="ws-list"></div>
+          <button id="btn-ws-back" class="btn btn-small ws-back-btn">← Back</button>
+        </div>
       </div>
-      <div class="browser-path">
-        <button id="browse-up" title="Go up">⬆</button>
-        <input id="browse-path" type="text" value="/" spellcheck="false">
-        <button id="browse-go" title="Navigate">Go</button>
+
+      <!-- Active workspace view -->
+      <div id="workspace-view" style="display:none">
+        <div class="ws-header">
+          <input id="ws-name" type="text" class="ws-name-input" spellcheck="false">
+          <div class="ws-actions">
+            <button id="btn-save-ws" class="ws-action-btn" title="Save workspace">💾</button>
+            <button id="btn-exit-ws" class="ws-action-btn" title="Save &amp; exit">🚪</button>
+          </div>
+        </div>
+        <div id="ws-folders" class="ws-folders"></div>
+        <button id="btn-add-folder" class="btn btn-small ws-add-folder-btn">+ Add Folder</button>
+        <div class="ws-browser-section" id="ws-browser-section" style="display:none">
+          <div class="browser-path">
+            <button id="ws-browse-up" title="Go up">⬆</button>
+            <input id="ws-browse-path" type="text" value="/" spellcheck="false" readonly>
+          </div>
+          <div id="ws-file-list" class="file-list"></div>
+          <button id="add-selected-btn" class="btn btn-accent" disabled>Add Selected</button>
+        </div>
       </div>
-      <div id="file-list" class="file-list"></div>
-      <button id="add-selected-btn" class="btn btn-accent" disabled>Add Selected</button>
+
+      <!-- Folder picker view -->
+      <div id="picker-view" style="display:none">
+        <div class="panel-header">
+          <h2>Select Folder to Add</h2>
+        </div>
+        <div class="browser-path">
+          <button id="picker-up" title="Go up">⬆</button>
+          <input id="picker-path" type="text" value="/" spellcheck="false">
+          <button id="picker-go" title="Navigate">Go</button>
+        </div>
+        <div id="picker-list" class="file-list"></div>
+        <div class="picker-actions">
+          <button id="picker-add" class="btn btn-accent">Add This Folder</button>
+          <button id="picker-cancel" class="btn btn-small">Cancel</button>
+        </div>
+      </div>
     </aside>
 
     <!-- Right: prompt, files, params, response -->

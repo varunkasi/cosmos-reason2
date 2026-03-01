@@ -82,6 +82,7 @@ services:
       python -m cosmos_reason2_utils.web.app
       --host 0.0.0.0 --port 9900
       --vllm-url http://vllm:8000
+      --workspace-cache /workspace_cache
     ports:
       - "9900:9900"
     volumes:
@@ -89,8 +90,12 @@ services:
       - /workspace/.venv
       - /workspace/examples/cosmos_rl/.venv
       - /:/hostfs:ro
+      - workspace-cache:/workspace_cache
     environment:
       - HF_TOKEN=${HF_TOKEN}
     depends_on:
       vllm:
         condition: service_healthy
+
+volumes:
+  workspace-cache:

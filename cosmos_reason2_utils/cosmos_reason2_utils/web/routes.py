@@ -15,9 +15,14 @@
 
 """API routes for the Cosmos-Reason2 web interface."""
 
+import json
 import logging
 import os
+import re
+import tempfile
 import time
+import uuid
+from datetime import datetime, timezone
 from urllib.parse import quote
 
 import openai
@@ -107,6 +112,55 @@ def _classify_entry(name: str) -> str:
     return "file"
 
 
+# ── Workspace persistence ────────────────────────────────────────────────────
+
+
+def _workspaces_path() -> str:
+    cache_dir = current_app.config.get("WORKSPACE_CACHE", "/workspace_cache")
+    return os.path.join(cache_dir, "workspaces.json")
+
+
+def _load_workspaces() -> list[dict]:
+    path = _workspaces_path()
+    if not os.path.exists(path):
+        return []
+    try:
+        with open(path) as f:
+            return json.load(f)
+    except (json.JSONDecodeError, OSError):
+        return []
+
+
+def _save_workspaces(workspaces: list[dict]) -> None:
+    path = _workspaces_path()
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    fd, tmp = tempfile.mkstemp(dir=os.path.dirname(path), suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as f:
+            json.dump(workspaces, f, indent=2)
+        os.replace(tmp, path)
+    except BaseException:
+        try:
+            os.unlink(tmp)
+        except OSError:
+            pass
+        raise
+
+
+def _next_workspace_name(workspaces: list[dict]) -> str:
+    r"""Generate the next default workspace name.
+
+    Given existing workspaces ["workspace0", "IR1", "workspace1"],
+    returns "workspace2" (max N from ``workspace\d+`` pattern + 1).
+    """
+    max_n = -1
+    for ws in workspaces:
+        m = re.match(r"^workspace(\d+)$", ws.get("name", ""))
+        if m:
+            max_n = max(max_n, int(m.group(1)))
+    return f"workspace{max_n + 1}"
+
+
 # ── Page routes ──────────────────────────────────────────────────────────────
 
 
@@ -117,6 +171,97 @@ def interview():
 
 
 # ── API routes ───────────────────────────────────────────────────────────────
+
+
+# ── Workspace CRUD ───────────────────────────────────────────────────────────
+
+
+@api.route("/api/workspaces")
+def list_workspaces():
+    """List all saved workspaces."""
+    return jsonify({"workspaces": _load_workspaces()})
+
+
+@api.route("/api/workspaces", methods=["POST"])
+def create_workspace():
+    """Create a new workspace with an auto-generated or user-supplied name."""
+    data = request.get_json(force=True) if request.is_json else {}
+    workspaces = _load_workspaces()
+    raw_name = data.get("name", "")
+    if raw_name and not isinstance(raw_name, str):
+        return jsonify({"error": "name must be a string"}), 400
+    name = (raw_name[:256].strip() if isinstance(raw_name, str) else "") or _next_workspace_name(workspaces)
+    folders = data.get("folders", [])
+    if not isinstance(folders, list) or not all(isinstance(f, str) for f in folders):
+        return jsonify({"error": "folders must be a list of strings"}), 400
+    if len(folders) > 100:
+        return jsonify({"error": "Too many folders (max 100)"}), 400
+    if any(len(f) > 4096 for f in folders):
+        return jsonify({"error": "Folder path too long (max 4096)"}), 400
+    if len(workspaces) >= 500:
+        return jsonify({"error": "Too many workspaces (max 500)"}), 400
+    now = datetime.now(timezone.utc).isoformat()
+    ws = {
+        "id": str(uuid.uuid4()),
+        "name": name,
+        "folders": folders,
+        "created_at": now,
+        "updated_at": now,
+    }
+    workspaces.append(ws)
+    _save_workspaces(workspaces)
+    return jsonify(ws), 201
+
+
+@api.route("/api/workspaces/<ws_id>")
+def get_workspace(ws_id):
+    """Get a single workspace by ID."""
+    for ws in _load_workspaces():
+        if ws["id"] == ws_id:
+            return jsonify(ws)
+    return jsonify({"error": "Workspace not found"}), 404
+
+
+@api.route("/api/workspaces/<ws_id>", methods=["PUT"])
+def update_workspace(ws_id):
+    """Update workspace name and/or folders."""
+    data = request.get_json(force=True)
+    if "name" in data:
+        if not isinstance(data["name"], str):
+            return jsonify({"error": "name must be a string"}), 400
+        data["name"] = data["name"][:256].strip()
+    if "folders" in data:
+        if not isinstance(data["folders"], list) or not all(
+            isinstance(f, str) for f in data["folders"]
+        ):
+            return jsonify({"error": "folders must be a list of strings"}), 400
+        if len(data["folders"]) > 100:
+            return jsonify({"error": "Too many folders (max 100)"}), 400
+        if any(len(f) > 4096 for f in data["folders"]):
+            return jsonify({"error": "Folder path too long (max 4096)"}), 400
+    workspaces = _load_workspaces()
+    for ws in workspaces:
+        if ws["id"] == ws_id:
+            if "name" in data:
+                ws["name"] = data["name"]
+            if "folders" in data:
+                ws["folders"] = data["folders"]
+            ws["updated_at"] = datetime.now(timezone.utc).isoformat()
+            _save_workspaces(workspaces)
+            return jsonify(ws)
+    return jsonify({"error": "Workspace not found"}), 404
+
+
+@api.route("/api/workspaces/<ws_id>", methods=["DELETE"])
+def delete_workspace(ws_id):
+    """Delete a workspace."""
+    workspaces = _load_workspaces()
+    before = len(workspaces)
+    workspaces = [ws for ws in workspaces if ws["id"] != ws_id]
+    if len(workspaces) == before:
+        return jsonify({"error": "Workspace not found"}), 404
+    _save_workspaces(workspaces)
+    return jsonify({"ok": True})
 
 
 @api.route("/api/health")
